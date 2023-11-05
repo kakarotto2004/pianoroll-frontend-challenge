@@ -18,6 +18,7 @@ export default class PianoRoll {
     constructor(svgElement, sequence) {
         this.svgElement = svgElement;
         this.end = null;
+        this.selectionRect = null; // To store the selection rectangle
 
         // PianoRoll brand #5DB5D5
         const backgroundStartColor = { r: 93, g: 181, b: 213 };
@@ -40,7 +41,104 @@ export default class PianoRoll {
         this.svgElement.setAttribute('viewBox', '0 0 1 1');
         this.svgElement.setAttribute('preserveAspectRatio', 'none');
         this.drawPianoRoll(sequence);
+
+        // =======================================================================================================
+
+        // Add event listeners for selection
+        this.svgElement.addEventListener(
+            'mousedown',
+            this.startSelection.bind(this)
+        );
+        this.svgElement.addEventListener(
+            'mousemove',
+            this.updateSelection.bind(this)
+        );
+        this.svgElement.addEventListener(
+            'mouseup',
+            this.endSelection.bind(this)
+        );
     }
+
+    // Variables to track selection start and end
+    selectionStartX = 0;
+    selectionEndX = 0;
+
+    startSelection(event) {
+        this.selectionStartX =
+            event.clientX - this.svgElement.getBoundingClientRect().left;
+        this.selectionRect = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'rect'
+        );
+        // this.selectionRect.setAttribute('fill', 'rgba(0, 0, 0, 0.5)');
+        this.selectionRect.setAttribute('x', this.selectionStartX);
+        this.selectionRect.setAttribute('y', '0');
+        this.selectionRect.setAttribute('width', '0');
+        this.selectionRect.setAttribute('height', '100%');
+        this.svgElement.appendChild(this.selectionRect);
+
+        // console.log(this.selectionStartX);
+    }
+
+    // clearSelection() {
+    //     // Clear the selection for this piano roll
+    //     this.selectedNotes = [];
+    //     this.selectionRect = null;
+    //     this.svgElement.style.background = '';
+    //     this.display.activePianoRoll = null; // Remove reference to this piano roll as active
+    // }
+
+    updateSelection(event) {
+        if (!this.selectionRect) return;
+
+        this.selectionEndX =
+            event.clientX - this.svgElement.getBoundingClientRect().left;
+        const width = this.selectionEndX - this.selectionStartX;
+        this.selectionRect.setAttribute('width', width);
+
+        // Highlight the selected area using CSS in real-time
+        this.svgElement.style.background =
+            'linear-gradient(to right, transparent ' +
+            this.selectionStartX +
+            'px, rgba(250, 100, 105, 0.3) ' +
+            this.selectionStartX +
+            'px, rgba(250, 100, 105, 0.3) ' +
+            this.selectionEndX +
+            'px, transparent ' +
+            this.selectionEndX +
+            'px)';
+
+        // console.log(this.selectionEndX);
+    }
+
+    endSelection() {
+        if (!this.selectionRect) return;
+
+        const selectedArea = {
+            startX: this.selectionStartX,
+            endX: this.selectionEndX,
+        };
+
+        console.log('Selected area:', selectedArea);
+
+        // Clean up the selection rectangle
+        this.svgElement.removeChild(this.selectionRect);
+        this.selectionRect = null;
+
+        // Highlight the selected area
+        this.svgElement.style.background =
+            'linear-gradient(to right, transparent ' +
+            selectedArea.startX +
+            'px, rgba(0, 0, 0, 0.3) ' +
+            selectedArea.startX +
+            'px, rgba(0, 0, 0, 0.3) ' +
+            selectedArea.endX +
+            'px, transparent ' +
+            selectedArea.endX +
+            'px)';
+    }
+
+    // =======================================================================================================
 
     timeToX(time) {
         return time / this.end;
