@@ -1,3 +1,12 @@
+# PianoRoll Frontend Task - screencast recording
+
+
+
+https://github.com/kakarotto2004/pianoroll-frontend-challenge/assets/126653764/37523356-38fa-437f-8def-bdcaf0ea9e53
+
+
+
+
 # PianoRoll Frontend Task
 
 ## Introduction
@@ -102,6 +111,5 @@ Your task is to implement a tool or an overlay on the piano roll that allows use
 1. **Functionality**: The selection mechanism should work as described, allowing users to select a range on the piano roll.
 2. **User Experience**: The tool should provide a good user experience, with intuitive controls and clear visual feedback.
 3. **Code Quality**: The code should be clean, easy to read, well-organized, and properly documented.
-
 
 
